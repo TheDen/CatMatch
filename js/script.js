@@ -33,6 +33,16 @@ fetch("cats.json")
     console.error("Error parsing JSON:", err);
   });
 
+function showMatchAndOpen(url) {
+  const banner = document.getElementById("match-banner");
+  banner.classList.add("show");
+
+  setTimeout(() => {
+    banner.classList.remove("show");
+    window.open(url, "_blank");
+  }, 1000); // 1 second delay before redirect
+}
+
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -157,7 +167,7 @@ function createCard(cat, showHint = false) {
         }
 
         if (direction === 1 && cat.url) {
-          window.open(cat.url, "_blank");
+          showMatchAndOpen(cat.url);
         }
       }, 300);
     } else {

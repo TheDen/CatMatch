@@ -320,3 +320,28 @@ body {
   margin-top: 7px;
   margin-bottom: 7px;
 }
+
+#match-banner {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: #fff8e1;
+  border: 2px solid #f9bdbb;
+  color: #333;
+  font-size: 2rem;
+  font-weight: bold;
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  z-index: 999;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  font-family: "Caveat Brush", sans-serif;
+}
+
+#match-banner.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
