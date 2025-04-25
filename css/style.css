@@ -322,6 +322,7 @@ body {
 }
 
 #match-banner {
+  /* existing styles */
   position: fixed;
   top: 40%;
   left: 50%;
@@ -331,17 +332,49 @@ body {
   color: #333;
   font-size: 2rem;
   font-weight: bold;
-  padding: 1rem 2rem;
+  padding: 2rem 2.5rem;
   border-radius: 16px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   opacity: 0;
   z-index: 999;
   transition: all 0.3s ease;
   pointer-events: none;
+  text-align: center;
   font-family: "Caveat Brush", sans-serif;
 }
 
 #match-banner.show {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
+}
+
+#visit-cat-btn {
+  margin-top: 1.5rem;
+  background: #ffdae0;
+  color: #333;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s ease;
+  text-wrap-mode: nowrap;
+}
+
+#visit-cat-btn:hover {
+  background: #ffcbd2;
+}
+
+#close-banner {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #333;
+  font-family: inherit;
 }

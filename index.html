@@ -90,7 +90,30 @@
         <button id="undo-button">↩️ Undo</button>
       </div>
     </div>
-    <div id="match-banner">🎉 It's a Match!</div>
+    <div id="match-banner">
+      <button id="close-banner" aria-label="Close match popup" title="Close">
+        <svg
+          viewBox="0 0 24 24"
+          width="24"
+          height="24"
+          fill="none"
+          stroke="#333"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+      <div class="match-content">
+        🎉 It's a Match!
+        <br />
+        <button id="visit-cat-btn">
+          <span id="visit-verb">👉 Tap</span> to meet your cat!
+        </button>
+      </div>
+    </div>
     <footer id="disclaimer">
       <p class="info">
         Made with ❤️ by
@@ -105,6 +128,7 @@
       </p>
     </footer>
     <script src="js/hammer.min.js"></script>
+    <script src="js/confetti.browser.min.js"></script>
     <script src="js/script.js"></script>
   </body>
 </html>

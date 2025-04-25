@@ -33,15 +33,26 @@ fetch("cats.json")
     console.error("Error parsing JSON:", err);
   });
 
+let pendingVisitUrl = null;
+
 function showMatchAndOpen(url) {
   const banner = document.getElementById("match-banner");
-  banner.classList.add("show");
-
-  setTimeout(() => {
-    banner.classList.remove("show");
-    window.open(url, "_blank");
-  }, 800);
+  pendingVisitUrl = url;
+  matchBannerOpen = true;
+  if (banner) {
+    banner.classList.add("show");
+  }
 }
+
+// Handle visit button click
+document.getElementById("visit-cat-btn").addEventListener("click", () => {
+  if (pendingVisitUrl) {
+    window.open(pendingVisitUrl, "_blank");
+    const banner = document.getElementById("match-banner");
+    banner.classList.remove("show");
+    pendingVisitUrl = null;
+  }
+});
 
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -145,7 +156,7 @@ function createCard(cat, showHint = false) {
     const inner = card.querySelector(".card-inner");
     const threshold = 120;
 
-    if (Math.abs(deltaX) > threshold) {
+    if (!matchBannerOpen && Math.abs(deltaX) > threshold) {
       const direction = deltaX > 0 ? 1 : -1;
       card.style.transform = `translateX(${direction * 1000}px) rotate(${direction * 45}deg)`;
       inner.style.opacity = "0";
@@ -167,6 +178,11 @@ function createCard(cat, showHint = false) {
 
         if (direction === 1 && cat.url) {
           showMatchAndOpen(cat.url);
+          confetti({
+            particleCount: 80,
+            spread: 60,
+            origin: { y: 0.6 },
+          });
         }
       }, 300);
     } else {
@@ -215,3 +231,35 @@ function applyFilter(state) {
 
   createCatBatch(filteredCats, 0);
 }
+
+const visitVerb = document.getElementById("visit-verb");
+
+if (
+  window.matchMedia("(hover: hover)").matches &&
+  !/Mobi|Android/i.test(navigator.userAgent)
+) {
+  // Desktop or laptop with a mouse
+  visitVerb.textContent = "🖱️ Click";
+} else {
+  // Touchscreen or mobile device
+  visitVerb.textContent = "👉 Tap";
+}
+
+let matchBannerOpen = false;
+
+function showMatchAndOpen(url) {
+  const banner = document.getElementById("match-banner");
+  pendingVisitUrl = url;
+  matchBannerOpen = true;
+
+  if (banner) {
+    banner.classList.add("show");
+  }
+}
+
+document.getElementById("close-banner").addEventListener("click", () => {
+  const banner = document.getElementById("match-banner");
+  banner.classList.remove("show");
+  matchBannerOpen = false;
+  pendingVisitUrl = null;
+});
