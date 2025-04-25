@@ -89,7 +89,6 @@ function createCatBatch(catArray, start = 0, size = BATCH_SIZE) {
 }
 
 function createCard(cat, showHint = false) {
-  // Home illustrations by Storyset
   const hasImage = cat.images && cat.images.length > 0;
   const imgSrc = hasImage ? cat.images[0] : "images/404cat.svg";
 
@@ -131,7 +130,7 @@ function createCard(cat, showHint = false) {
   hammer.on("pan", (ev) => {
     deltaX = ev.deltaX;
     const rotate = deltaX / 20;
-    const opacity = 1 - Math.min(Math.abs(deltaX) / 800, 0.4); // max 60% opacity
+    const opacity = 1 - Math.min(Math.abs(deltaX) / 800, 0.4);
 
     card.style.transform = `translateX(${deltaX}px) rotate(${rotate}deg)`;
     card.querySelector(".card-inner").style.opacity = opacity;
@@ -171,7 +170,7 @@ function createCard(cat, showHint = false) {
         }
       }, 300);
     } else {
-      // 💡 Reset state if not swiped far enough
+      // Reset state if not swiped far enough
       card.style.opacity = "1";
       card.style.transform = "";
       inner.style.opacity = "1";
