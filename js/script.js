@@ -4,6 +4,7 @@ let allCats = []; // store original shuffled cats
 let currentBatch = [];
 let batchIndex = 0;
 const BATCH_SIZE = 20;
+let filteredCats = [];
 
 fetch("cats.json")
   .then((res) => res.text())
@@ -12,7 +13,8 @@ fetch("cats.json")
     container.innerHTML = "";
 
     allCats = shuffle(JSON.parse(text));
-    createCatBatch(allCats);
+    filteredCats = [...allCats]; // full set at first
+    createCatBatch(filteredCats);
     // Add swipe hint to top card
     setTimeout(() => {
       const topCard = container.querySelector(".card:last-child");
@@ -151,7 +153,7 @@ function createCard(cat, showHint = false) {
           applyFilter(currentState);
         } else if (remaining.length <= 5 && batchIndex < allCats.length) {
           // Load more cards
-          createCatBatch(allCats, batchIndex);
+          createCatBatch(filteredCats, batchIndex);
         }
 
         if (direction === 1 && cat.url) {
@@ -197,10 +199,10 @@ function applyFilter(state) {
   lastRemovedCat = null;
   batchIndex = 0;
 
-  const filtered = allCats.filter((cat) => {
+  filteredCats = allCats.filter((cat) => {
     if (!state) return true;
     return cat.location && cat.location.includes(state);
   });
 
-  createCatBatch(filtered, 0);
+  createCatBatch(filteredCats, 0);
 }
