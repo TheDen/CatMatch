@@ -44,7 +44,7 @@ gosec: ## Runs gosec on the codebase
 
 format-go: ## Runs go-fmt on the codebase
 	@printf "%s\n" "==== Running go-fmt ====="
-	gofmt -s -w  *.go internal/ 
+	gofmt -s -w  *.go
 
 golines-format: ## Runs golines on the codebase
 	# https://github.com/segmentio/golines
