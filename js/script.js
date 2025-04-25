@@ -5,6 +5,47 @@ let currentBatch = [];
 let batchIndex = 0;
 const BATCH_SIZE = 20;
 let filteredCats = [];
+const catFacts = [
+  "Cats sleep 16–18 hours a day 💤",
+  "A group of cats is called a 'clowder' 🐾",
+  "Cats can jump 5–7 times their height!",
+  "Cats have 230 bones — humans have 206",
+  "Cats can hear two octaves higher than humans 👂",
+  "Cats' purrs can help heal bones ✨",
+  "Each cat’s noseprint is unique, like a fingerprint!",
+  "Cats walk on their toes, not their paws 🐾",
+  "The oldest cat lived to 38 years old 😲",
+  "Sir Isaac Newton invented the cat door!",
+  "A cat’s heart beats twice as fast as a human’s ❤️",
+  "Black cats are lucky in Japan 🍀",
+  "The first cat in space was named Félicette 🚀",
+  "Adult cats meow mostly to communicate with humans 🗣️",
+  "Cats step with both left legs, then both right legs 🐾",
+  "The average house cat spends 70% of life sleeping",
+  "Cats can sprint at 31 mph (49 km/h) 🚀",
+  "Most cats have 24 whiskers",
+  "Cats can smell with an extra organ in their mouth 👃",
+  "Cats prefer food at room temperature 🍽️",
+  "Florence Nightingale owned 60+ cats 🐱",
+  "Cats have a 'righting reflex' to land on their feet",
+  "Cats use whiskers to judge gaps and spaces 📏",
+  "A cat's brain is 90% similar to a human’s 🧠",
+  "Purring happens at 26 cycles per second (like a diesel engine!)",
+  "The Egyptian word for cat is 'mau' 🐈",
+  "Tabby cats are named after Baghdad silk patterns 🧵",
+  "Cats have 32 muscles in each ear 🎧",
+  "Cats spend 30% of their waking hours grooming ✨",
+  "Cats see six times better than humans in the dark 🌌",
+  "Cats knead their paws when they’re happy 🥰",
+  "Kittens are born with blue eyes 💙",
+  "Cats respond better to higher-pitched voices",
+  "Calico cats are almost always female 🧡🤍🖤",
+  "Cats can rotate their ears independently",
+  "Declawing a cat is like amputating your fingertips 😿",
+  "A cat’s back is extremely flexible — 53 vertebrae!",
+  "Indoor cats can live up to 20 years 🏠",
+  "Cats can predict earthquakes! 🌍",
+];
 
 fetch("cats.json")
   .then((res) => res.text())
@@ -263,3 +304,25 @@ document.getElementById("close-banner").addEventListener("click", () => {
   matchBannerOpen = false;
   pendingVisitUrl = null;
 });
+
+let factInterval = null;
+
+function startCatFactsRotation() {
+  const factBox = document.getElementById("cat-fact");
+
+  function updateFact() {
+    const fact = catFacts[Math.floor(Math.random() * catFacts.length)];
+
+    // Fade out
+    factBox.style.opacity = 0;
+
+    setTimeout(() => {
+      factBox.innerHTML = `🐾 ${fact}`;
+      factBox.style.opacity = 1;
+    }, 800); // match your CSS transition timing
+  }
+
+  updateFact(); // show one immediately
+  factInterval = setInterval(updateFact, 5000); // change every 5 seconds
+}
+startCatFactsRotation();

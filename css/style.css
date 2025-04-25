@@ -15,8 +15,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #fff7f0, #f2f8fd);
+  min-height: 100vh;
   background: linear-gradient(
     145deg,
     #fef6e4,
@@ -27,6 +26,19 @@ body {
 
   background-attachment: fixed;
   background-size: cover;
+  flex-direction: column;
+}
+
+@keyframes backgroundMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 #card-container {
@@ -144,7 +156,6 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  margin-bottom: 1.5rem;
   flex-wrap: wrap;
 }
 
@@ -377,4 +388,17 @@ body {
   cursor: pointer;
   color: #333;
   font-family: inherit;
+}
+
+#cat-fact {
+  font-family: "Caveat Brush", sans-serif;
+  font-size: 1rem;
+  color: #555;
+  text-align: center;
+  margin: 1rem 0 2rem;
+  padding: 0 1rem;
+  max-width: 600px;
+  line-height: 1.4;
+  opacity: 1;
+  transition: opacity 0.8s ease;
 }
