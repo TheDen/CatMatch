@@ -40,7 +40,7 @@ function showMatchAndOpen(url) {
   setTimeout(() => {
     banner.classList.remove("show");
     window.open(url, "_blank");
-  }, 1000); // 1 second delay before redirect
+  }, 800);
 }
 
 function shuffle(array) {
