@@ -1,4 +1,4 @@
 #!/bin/bash
 
-jq -s . data.json > web/cats.json
-minify web/cats.json -o web/cats.json
+jq -s . data.json > ../cats.json
+minify ../cats.json -o ../cats.json
