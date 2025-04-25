@@ -161,11 +161,16 @@ body {
   padding: 0.5rem 1rem;
   border-radius: 20px;
   border: 2px solid #ddd;
-  background-color: #fff;
+  background-color: #fff !important;
+  background-image: none !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: all 0.2s ease;
   appearance: none; /* remove default arrow in Safari */
+  -webkit-tap-highlight-color: transparent;
+  color: #333;
 }
 
 #state-filter:hover {
