@@ -19,10 +19,21 @@ func main() {
 	grabData := flag.Bool("grab-data", false, "Grab data from cat listing URLs")
 	maxURLs := flag.Int("max", 1000, "Maximum number of URLs to download")
 	outputFile := flag.String("output", "cat_urls.json", "Output file for URLs")
+	catListingURL := flag.String(
+		"url",
+		"https://www.petrescue.com.au/listings/search/cats?per_page=60",
+		"URL to scrape data from (for --grab-data only)",
+	)
+	help := flag.Bool("help", false, "Show help message")
 	flag.Parse()
 
+	if *help || (*downloadURLs == false && *grabData == false) {
+		flag.Usage()
+		os.Exit(0)
+	}
+
 	if *downloadURLs {
-		if err := scrapeCatListings(*maxURLs, *outputFile); err != nil {
+		if err := scrapeCatListings(*maxURLs, *catListingURL, *outputFile); err != nil {
 			fmt.Fprintf(os.Stderr, "❌ Error: %v\n", err)
 			os.Exit(1)
 		}
@@ -243,15 +254,29 @@ func scrapeCatDetails(url string) (map[string]interface{}, error) {
 }
 
 // scrapeCatListings scrapes cat listing URLs and writes them to a JSON file
-func scrapeCatListings(maxURLs int, outputFile string) error {
+func scrapeCatListings(maxURLs int, catListingURL string, outputFile string) error {
 	url := launcher.New().Headless(true).MustLaunch()
 	browser := rod.New().ControlURL(url).MustConnect()
 	defer browser.MustClose()
 
-	page := browser.MustPage("https://www.petrescue.com.au/listings/search/cats?per_page=60")
+	page := browser.MustPage(catListingURL)
 
-	urlMap := make(map[string]bool)
+	existingURLs := make(map[string]bool)
 	var allUrls []string
+
+	if file, err := os.Open(outputFile); err == nil {
+		defer file.Close()
+		var urlsFromFile []string
+		if err := json.NewDecoder(file).Decode(&urlsFromFile); err == nil {
+			for _, u := range urlsFromFile {
+				existingURLs[u] = true
+				allUrls = append(allUrls, u)
+			}
+			fmt.Printf("Loaded %d existing URLs from %s\n", len(urlsFromFile), outputFile)
+		}
+	}
+
+	newCount := 0
 
 	for {
 		page.MustWaitLoad()
@@ -261,19 +286,20 @@ func scrapeCatListings(maxURLs int, outputFile string) error {
 
 		for _, a := range anchors {
 			href := a.MustAttribute("href")
-			if href != nil && !urlMap[*href] {
-				urlMap[*href] = true
+			if href != nil && !existingURLs[*href] {
+				existingURLs[*href] = true
 				allUrls = append(allUrls, *href)
+				newCount++
 				fmt.Println(*href)
 
-				if len(allUrls) >= maxURLs {
-					fmt.Printf("Reached max URL limit (%d)\n", maxURLs)
+				if newCount >= maxURLs {
+					fmt.Printf("Reached max new URL limit (%d)\n", maxURLs)
 					return writeJSON(outputFile, allUrls)
 				}
 			}
 		}
 
-		links, err := page.Timeout(5 * time.Second).Elements("a")
+		links, err := page.Timeout(3 * time.Second).Elements("a")
 		if err != nil {
 			return fmt.Errorf("error finding links: %w", err)
 		}
