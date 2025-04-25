@@ -43,8 +43,11 @@ body {
 
 #card-container {
   position: relative;
-  width: 320px;
-  height: 500px;
+  width: 90vw; /* 90% of the viewport width */
+  max-width: 400px; /* cap it so it doesn't look huge */
+  height: 75vh; /* 75% of viewport height */
+  max-height: 600px; /* cap max height too */
+  margin: 0 auto; /* center it horizontally */
 }
 
 .card {
@@ -207,15 +210,28 @@ body {
   #app {
     height: 100%;
   }
+  #state-filter {
+    padding-top: 0.2em;
+    padding-right: 0.5em;
+    padding-left: 0.5em;
+    padding-bottom: 0.2em;
+  }
 }
 
 /* iphone SE height */
 @media (max-height: 710px) {
+  #site-title {
+    margin-bottom: 0px !important;
+  }
   #site-tagline {
     margin-top: 0px !important;
     margin-bottom: 0px !important;
   }
   #controls {
+    margin-bottom: 0px !important;
+  }
+  #cat-fact {
+    margin-top: 0px !important;
     margin-bottom: 0px !important;
   }
 }
@@ -231,7 +247,7 @@ body {
 #site-tagline {
   font-size: 1.2rem;
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   margin-top: 0;
   color: #666;
 }
@@ -395,8 +411,8 @@ body {
   font-size: 1rem;
   color: #555;
   text-align: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
   padding: 0 1rem;
   max-width: 600px;
   line-height: 1.4;
