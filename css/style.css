@@ -395,7 +395,8 @@ body {
   font-size: 1rem;
   color: #555;
   text-align: center;
-  margin: 1rem 0 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   padding: 0 1rem;
   max-width: 600px;
   line-height: 1.4;
