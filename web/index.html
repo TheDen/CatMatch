@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CatMatch – Find Your Purr-fect Match</title>
+
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="CatMatch – Find Your Purr-fect Match" />
+    <meta
+      name="description"
+      content="Swipe through adorable cats ready for adoption. Find your purr-fect match by state and fall in love today!"
+    />
+    <meta
+      name="keywords"
+      content="cats, adoption, swipe, match, purr-fect, feline, friend, pet, rescue, animal, shelter"
+    />
+    <meta name="author" content="catmatch.theden.sh" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="en" />
+    <meta name="theme-color" content="#fffaf0" />
+
+    <!-- Favicon: emoji-based -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐱</text></svg>"
+    />
+
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/lightgallery-bundle.min.css" />
+
+    <!-- Apple & PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="msapplication-TileColor" content="#111115" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://catmatch.theden.sh/" />
+    <meta property="og:title" content="CatMatch – Find Your Purr-fect Match" />
+    <meta
+      property="og:description"
+      content="Swipe through adoptable cats and find your new furry friend. Filter by location and match with love."
+    />
+    <meta
+      property="og:image"
+      content="https://catmatch.theden.sh/og-image.png"
+    />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://catmatch.theden.sh/" />
+    <meta name="twitter:title" content="CatMatch – Find Your Purr-fect Match" />
+    <meta
+      name="twitter:description"
+      content="Browse adoptable cats near you. Filter by state and swipe your way to your new best friend."
+    />
+    <meta
+      name="twitter:image"
+      content="https://catmatch.theden.sh/og-image.png"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <h1 id="site-title">🐾 CatMatch</h1>
+      <p id="site-tagline">Find your purr-fect feline friend by swiping! 😻</p>
+      <div id="controls">
+        <label for="state-filter">Filter by state:</label>
+        <select id="state-filter">
+          <option value="">All</option>
+          <option value="ACT">ACT</option>
+          <option value="NSW">NSW</option>
+          <option value="NT">NT</option>
+          <option value="QLD">QLD</option>
+          <option value="SA">SA</option>
+          <option value="TAS">TAS</option>
+          <option value="VIC">VIC</option>
+          <option value="WA">WA</option>
+        </select>
+      </div>
+      <div id="card-container">Loading cats...</div>
+      <div id="undo-wrapper">
+        <button id="undo-button">↩️ Undo</button>
+      </div>
+    </div>
+    <footer id="disclaimer">
+      <p class="info">
+        Made with ❤️ by
+        <a href="https://theden.sh" target="_blank">theden.sh</a> | 🐾 This app
+        is not affiliated with
+        <a
+          href="https://www.petrescue.com.au"
+          target="_blank"
+          rel="noopener noreferrer"
+          >PetRescue.com.au</a
+        >.
+      </p>
+    </footer>
+    <script src="js/hammer.min.js"></script>
+    <script src="js/script.js"></script>
+  </body>
+</html>

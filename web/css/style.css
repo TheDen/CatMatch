@@ -1,0 +1,317 @@
+@font-face {
+  font-family: "Caveat Brush";
+  font-style: normal;
+  font-weight: 400;
+  src:
+    url("../fonts/CaveatBrush-Regular.ttf") format("truetype"),
+    url("../fonts/CaveatBrush-Regular.woff2") format("woff");
+}
+
+body {
+  font-family: "Caveat Brush", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f6f8fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #fff7f0, #f2f8fd);
+  background: linear-gradient(
+    145deg,
+    #fef6e4,
+    #f7e9f0 35%,
+    #e3f2fd 70%,
+    #fdfdfe
+  );
+
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+#card-container {
+  position: relative;
+  width: 320px;
+  height: 500px;
+}
+
+.card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+  touch-action: pan-y;
+  will-change: transform;
+  will-change: transform, opacity;
+  cursor: grab;
+}
+
+.card img {
+  user-drag: none; /* Safari */
+  -webkit-user-drag: none; /* Older WebKit */
+  user-select: none;
+  pointer-events: auto;
+  width: 100%;
+  height: 60%;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 1rem;
+}
+
+.card h2 {
+  margin: 0 0 0.5rem;
+}
+
+.card p {
+  margin: 0.2rem 0;
+  color: #555;
+}
+
+.card.dragging {
+  transition: none;
+  cursor: grabbing;
+}
+
+#undo-wrapper {
+  position: fixed;
+  bottom: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: auto;
+  text-align: center;
+}
+
+#undo-button {
+  background: #fff;
+  color: #444;
+  font-size: 1rem;
+  padding: 0.6rem 1.4rem;
+  border: 2px solid #ddd;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  font-family: "Caveat Brush", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(6px);
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+#undo-button:hover {
+  background: #f9f9f9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+#undo-button:before {
+  font-size: 1.2rem;
+}
+
+.card .reaction {
+  position: absolute;
+  top: 20px;
+  font-size: 3rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  font-size: 4rem;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.card .reaction.like {
+  left: 20px;
+  color: green;
+}
+
+.card .reaction.nope {
+  right: 20px;
+  color: red;
+}
+
+#controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+#controls label {
+  font-weight: bold;
+  font-size: 1.1rem;
+  font-family: "Caveat Brush", "Helvetica Neue", Helvetica, sans-serif;
+  color: #333;
+}
+
+#state-filter {
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 2px solid #ddd;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none; /* remove default arrow in Safari */
+}
+
+#state-filter:hover {
+  background-color: #fef9f4;
+  border-color: #ffc5d9;
+}
+
+#state-filter:focus {
+  outline: none;
+  border-color: #ffb3c6;
+  box-shadow: 0 0 0 3px rgba(255, 179, 198, 0.3);
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 80%;
+}
+
+@media (max-width: 768px) {
+  #app {
+    height: 100%;
+  }
+}
+
+/* iphone SE height */
+@media (max-height: 710px) {
+  #site-tagline {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+  }
+  #controls {
+    margin-bottom: 0px !important;
+  }
+}
+
+#site-title {
+  font-size: 2.5rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  color: #333;
+}
+
+#site-tagline {
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+  color: #666;
+}
+
+@keyframes swipe-hint {
+  0% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-40px) rotate(-5deg);
+  }
+  50% {
+    transform: translateX(0) rotate(0deg);
+  }
+  75% {
+    transform: translateX(40px) rotate(5deg);
+  }
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+}
+
+.card.hint {
+  animation: swipe-hint 1.4s ease-in-out 1;
+}
+
+.swipe-hint {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 5;
+  animation: fade-out 4s forwards;
+  pointer-events: none;
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+#disclaimer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #666;
+  background: #f9f9f9;
+}
+
+@keyframes undo-slide-in {
+  from {
+    transform: translateX(-400px) rotate(-10deg);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) rotate(0);
+    opacity: 1;
+  }
+}
+
+.card.undo-animate {
+  animation: undo-slide-in 0.4s ease-out;
+}
+
+.no-image-label {
+  margin-top: 0.4rem;
+  text-align: center;
+  background: #fffbe6;
+  color: #444;
+  font-weight: bold;
+  font-size: 0.95rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.image-wrapper {
+  width: 100%;
+  height: 60%;
+}
+
+.info {
+  margin-top: 7px;
+  margin-bottom: 7px;
+}
