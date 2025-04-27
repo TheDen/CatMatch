@@ -1,112 +1,256 @@
 const container = document.getElementById("card-container");
-let lastRemovedCat = null;
-let allCats = []; // store original shuffled cats
-let currentBatch = [];
-let batchIndex = 0;
-const BATCH_SIZE = 20;
+const visitVerb = document.getElementById("visit-verb");
+const visitBtn = document.getElementById("visit-cat-btn");
+const closeBtn = document.getElementById("close-banner");
+const banner = document.getElementById("match-banner");
+const factBox = document.getElementById("cat-fact");
+const stateFilter = document.getElementById("state-filter");
+const undoButton = document.getElementById("undo-button");
+
+let allCats = [];
 let filteredCats = [];
+let currentBatch = [];
+let lastRemovedCat = null;
+let batchIndex = 0;
 let matchBannerOpen = false;
 let pendingVisitUrl = null;
+let factInterval = null;
+
+const BATCH_SIZE = 20;
+
 const catFacts = [
   "Cats sleep 16–18 hours a day 💤",
   "A group of cats is called a 'clowder' 🐾",
   "Cats can jump 5–7 times their height!",
   "Cats have 230 bones — humans have 206",
-  "Cats can hear two octaves higher than humans 👂",
   "Cats' purrs can help heal bones ✨",
-  "Each cat’s noseprint is unique, like a fingerprint!",
+  "Each cat’s noseprint is unique like a fingerprint!",
   "Cats walk on their toes, not their paws 🐾",
-  "The oldest cat lived to 38 years old 😲",
-  "Sir Isaac Newton invented the cat door!",
-  "A cat’s heart beats twice as fast as a human’s ❤️",
-  "Black cats are lucky in Japan 🍀",
   "The first cat in space was named Félicette 🚀",
-  "Adult cats meow mostly to communicate with humans 🗣️",
+  "Sir Isaac Newton invented the cat door!",
   "Cats step with both left legs, then both right legs 🐾",
-  "The average house cat spends 70% of life sleeping",
-  "Cats can sprint at 31 mph (49 km/h) 🚀",
-  "Most cats have 24 whiskers",
-  "Cats can smell with an extra organ in their mouth 👃",
-  "Cats prefer food at room temperature 🍽️",
   "Florence Nightingale owned 60+ cats 🐱",
-  "Cats have a 'righting reflex' to land on their feet",
-  "Cats use whiskers to judge gaps and spaces 📏",
-  "A cat's brain is 90% similar to a human’s 🧠",
-  "Purring happens at 26 cycles per second (like a diesel engine!)",
-  "The Egyptian word for cat is 'mau' 🐈",
-  "Tabby cats are named after Baghdad silk patterns 🧵",
-  "Cats have 32 muscles in each ear 🎧",
-  "Cats spend 30% of their waking hours grooming ✨",
-  "Cats see six times better than humans in the dark 🌌",
+  "Cats can sprint at 31 mph 🚀",
   "Cats knead their paws when they’re happy 🥰",
-  "Kittens are born with blue eyes 💙",
-  "Cats respond better to higher-pitched voices",
-  "Calico cats are almost always female 🧡🤍🖤",
-  "Cats can rotate their ears independently",
-  "Declawing a cat is like amputating your fingertips 😿",
-  "A cat’s back is extremely flexible — 53 vertebrae!",
+  "Black cats are lucky in Japan 🍀",
+  "A cat's brain is 90% similar to a human’s 🧠",
   "Indoor cats can live up to 20 years 🏠",
   "Cats can predict earthquakes! 🌍",
 ];
 
+// --- Main Loading ---
+
 fetch("cats.json")
   .then((res) => res.text())
   .then((text) => {
-    const cats = shuffle(JSON.parse(text));
-    container.innerHTML = "";
-
     allCats = shuffle(JSON.parse(text));
-    filteredCats = [...allCats]; // full set at first
+    filteredCats = [...allCats];
+    container.innerHTML = "";
     createCatBatch(filteredCats);
-    // Add swipe hint to top card
-    setTimeout(() => {
-      const topCard = container.querySelector(".card:last-child");
-      if (topCard) {
-        topCard.classList.add("hint");
-
-        // Remove the class so it can animate again in the future if needed
-        setTimeout(() => {
-          topCard.classList.remove("hint");
-        }, 1500);
-      }
-    }, 200);
+    showSwipeHint();
   })
   .catch((err) => {
     container.innerHTML = "Failed to load cats 😿";
-    console.error("Error parsing JSON:", err);
+    console.error(err);
   });
 
-// Handle visit button click
-document.getElementById("visit-cat-btn").addEventListener("click", () => {
-  if (pendingVisitUrl) {
-    const urlToVisit = pendingVisitUrl;
-    pendingVisitUrl = null;
-    matchBannerOpen = false;
+// --- Swipe Hint ---
 
+function showSwipeHint() {
+  setTimeout(() => {
     const topCard = container.querySelector(".card:last-child");
     if (topCard) {
-      topCard.remove(); // now remove after match screen
+      topCard.classList.add("hint");
+      setTimeout(() => topCard.classList.remove("hint"), 1500);
+    }
+  }, 200);
+}
+
+// --- Batch and Cards ---
+
+function createCatBatch(catArray, start = 0, size = BATCH_SIZE) {
+  const slice = catArray.slice(start, start + size);
+  currentBatch = slice;
+  batchIndex = start + size;
+
+  const shuffled = shuffle([...slice]);
+  const withImages = shuffled.filter((cat) => cat.images?.some(isValidPhoto));
+  const withoutImages = shuffled.filter(
+    (cat) => !cat.images?.some(isValidPhoto),
+  );
+  const ordered = [...withImages, ...withoutImages];
+
+  // Ensure last card has an image
+  const topIndex = ordered.findIndex((cat) => cat.images?.some(isValidPhoto));
+  if (topIndex !== -1 && topIndex !== ordered.length - 1) {
+    const [topCat] = ordered.splice(topIndex, 1);
+    ordered.push(topCat);
+  }
+
+  ordered.forEach((cat, index) =>
+    createCard(cat, index === ordered.length - 1),
+  );
+}
+
+function createCard(cat, showHint = false) {
+  const hasImage = cat.images?.length > 0;
+  const imgSrc = hasImage ? cat.images[0] : "images/404cat.svg";
+
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <div class="card-inner">
+      ${showHint ? `<div class="swipe-hint">👉 Swipe to meet them!</div>` : ""}
+      <div class="image-wrapper">
+        <img src="${imgSrc}" alt="${cat.name}" draggable="false" />
+      </div>
+      ${!hasImage ? `<div class="no-image-label">No cat photos available 🙀</div>` : ""}
+      <div class="card-content">
+        <h2>${cat.name}</h2>
+        <p>${cat.byline || "No description"}</p>
+        <p><strong>Age:</strong> ${cat.age || "Unknown"}</p>
+        <p><strong>Location:</strong> ${cat.location || "Unknown"}</p>
+      </div>
+    </div>
+    <span class="reaction like">😻</span>
+    <span class="reaction nope">😿</span>
+  `;
+
+  container.appendChild(card);
+  addSwipeHandling(card, cat);
+
+  return card;
+}
+
+function addSwipeHandling(card, cat) {
+  const hammer = new Hammer(card);
+  hammer.get("pan").set({ direction: Hammer.DIRECTION_ALL });
+
+  let deltaX = 0;
+
+  hammer.on("panstart", () => card.classList.add("dragging"));
+
+  hammer.on("pan", (ev) => {
+    deltaX = ev.deltaX;
+    const rotate = deltaX / 20;
+    const opacity = 1 - Math.min(Math.abs(deltaX) / 800, 0.4);
+
+    card.style.transform = `translateX(${deltaX}px) rotate(${rotate}deg)`;
+    card.querySelector(".card-inner").style.opacity = opacity;
+
+    card.querySelector(".like").style.opacity = deltaX > 50 ? "1" : "0";
+    card.querySelector(".nope").style.opacity = deltaX < -50 ? "1" : "0";
+  });
+
+  hammer.on("panend", () => {
+    card.classList.remove("dragging");
+
+    const inner = card.querySelector(".card-inner");
+    const threshold = 120;
+
+    if (!matchBannerOpen && Math.abs(deltaX) > threshold) {
+      const direction = deltaX > 0 ? 1 : -1;
+      card.style.transform = `translateX(${direction * 1000}px) rotate(${direction * 45}deg)`;
+      inner.style.opacity = "0";
+
+      setTimeout(() => {
+        if (direction === 1 && cat.url) {
+          pendingVisitUrl = cat.url;
+          matchBannerOpen = true;
+          showMatchAndOpen();
+          confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+          card.remove();
+        } else {
+          card.remove();
+        }
+        loadMoreCardsIfNeeded();
+      }, 300);
+    } else {
+      resetCard(card);
     }
 
-    const banner = document.getElementById("match-banner");
-    banner.classList.remove("show");
+    deltaX = 0;
+  });
+}
 
-    window.open(urlToVisit, "_blank");
+// --- Helper Functions ---
+
+function loadMoreCardsIfNeeded() {
+  const remaining = container.querySelectorAll(".card");
+  if (remaining.length <= 5 && batchIndex < filteredCats.length) {
+    createCatBatch(filteredCats, batchIndex);
+  }
+  if (remaining.length === 0) {
+    applyFilter(stateFilter.value);
+  }
+}
+
+function resetCard(card) {
+  const inner = card.querySelector(".card-inner");
+  card.style.opacity = "1";
+  card.style.transform = "";
+  inner.style.opacity = "1";
+  inner.style.transition = "opacity 0.2s ease";
+  card.querySelector(".like").style.opacity = "0";
+  card.querySelector(".nope").style.opacity = "0";
+}
+
+function showMatchAndOpen() {
+  if (banner) banner.classList.add("show");
+}
+
+// --- Events ---
+
+visitBtn.addEventListener("click", () => {
+  if (pendingVisitUrl) {
+    window.open(pendingVisitUrl, "_blank");
+    pendingVisitUrl = null;
+    banner.classList.remove("show");
+    matchBannerOpen = false;
+    removeTopCard();
   }
 });
 
-document.getElementById("close-banner").addEventListener("click", () => {
-  matchBannerOpen = false;
+closeBtn.addEventListener("click", () => {
   pendingVisitUrl = null;
+  banner.classList.remove("show");
+  matchBannerOpen = false;
+  removeTopCard();
+});
 
+function removeTopCard() {
   const topCard = container.querySelector(".card:last-child");
   if (topCard) {
-    topCard.remove(); // now remove after close too
+    topCard.remove();
+    loadMoreCardsIfNeeded();
   }
+}
 
-  const banner = document.getElementById("match-banner");
-  banner.classList.remove("show");
+stateFilter.addEventListener("change", (e) => {
+  lastRemovedCat = null;
+  applyFilter(e.target.value);
 });
+
+undoButton.addEventListener("click", () => {
+  if (lastRemovedCat) {
+    const card = createCard(lastRemovedCat);
+    card.classList.add("undo-animate");
+    setTimeout(() => card.classList.remove("undo-animate"), 500);
+    lastRemovedCat = null;
+  }
+});
+
+// --- Filter and Utilities ---
+
+function applyFilter(state) {
+  container.innerHTML = "";
+  lastRemovedCat = null;
+  batchIndex = 0;
+  filteredCats = allCats.filter(
+    (cat) => !state || (cat.location && cat.location.includes(state)),
+  );
+  createCatBatch(filteredCats, 0);
+}
 
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -123,214 +267,30 @@ function isValidPhoto(url) {
   );
 }
 
-function createCatBatch(catArray, start = 0, size = BATCH_SIZE) {
-  const slice = catArray.slice(start, start + size);
-  currentBatch = slice;
-  batchIndex = start + size;
-
-  const withImages = slice.filter(
-    (cat) => cat.images && cat.images.some(isValidPhoto),
-  );
-
-  const withoutImages = slice.filter(
-    (cat) => !cat.images || !cat.images.some(isValidPhoto),
-  );
-
-  const shuffled = shuffle([...withImages, ...withoutImages]);
-
-  // Ensure last item (top card) has a valid image
-  const topIndex = shuffled.findIndex(
-    (cat) => cat.images && cat.images.some(isValidPhoto),
-  );
-
-  if (topIndex !== -1 && topIndex !== shuffled.length - 1) {
-    const [topCat] = shuffled.splice(topIndex, 1);
-    shuffled.push(topCat);
-  }
-
-  shuffled.forEach((cat, index) =>
-    createCard(cat, index === shuffled.length - 1),
-  );
-}
-
-function createCard(cat, showHint = false) {
-  const hasImage = cat.images && cat.images.length > 0;
-  const imgSrc = hasImage ? cat.images[0] : "images/404cat.svg";
-
-  const card = document.createElement("div");
-  card.className = "card";
-  card.innerHTML = `
-  <div class="card-inner">
-      ${showHint ? `<div class="swipe-hint">👉 Swipe to meet them!</div>` : ""}
-          <div class="image-wrapper">
-    <img src="${imgSrc}" alt="${cat.name}" draggable="false" />
-    </div>
-
-      ${!hasImage ? `<div class="no-image-label">No cat photos available 🙀</div>` : ""}
-
-    <div class="card-content">
-      <h2>${cat.name}</h2>
-      <p>${cat.byline || "No description"}</p>
-      <p><strong>Age:</strong> ${cat.age || "Unknown"}</p>
-      <p><strong>Location:</strong> ${cat.location || "Unknown"}</p>
-    </div>
-  </div>
-  <span class="reaction like">😻</span>
-  <span class="reaction nope">😿</span>
-`;
-  container.appendChild(card);
-
-  const likeEmoji = card.querySelector(".like");
-  const nopeEmoji = card.querySelector(".nope");
-
-  const hammer = new Hammer(card);
-  hammer.get("pan").set({ direction: Hammer.DIRECTION_ALL });
-
-  let deltaX = 0;
-
-  hammer.on("panstart", () => {
-    card.classList.add("dragging");
-  });
-
-  hammer.on("pan", (ev) => {
-    deltaX = ev.deltaX;
-    const rotate = deltaX / 20;
-    const opacity = 1 - Math.min(Math.abs(deltaX) / 800, 0.4);
-
-    card.style.transform = `translateX(${deltaX}px) rotate(${rotate}deg)`;
-    card.querySelector(".card-inner").style.opacity = opacity;
-
-    likeEmoji.style.opacity = deltaX > 50 ? "1" : "0";
-    nopeEmoji.style.opacity = deltaX < -50 ? "1" : "0";
-  });
-
-  hammer.on("panend", () => {
-    card.classList.remove("dragging");
-
-    const inner = card.querySelector(".card-inner");
-    const threshold = 120;
-
-    if (!matchBannerOpen && Math.abs(deltaX) > threshold) {
-      const direction = deltaX > 0 ? 1 : -1;
-      card.style.transform = `translateX(${direction * 1000}px) rotate(${direction * 45}deg)`;
-      inner.style.opacity = "0";
-      likeEmoji.style.opacity = "0";
-      nopeEmoji.style.opacity = "0";
-
-      setTimeout(() => {
-        lastRemovedCat = cat;
-        card.remove();
-
-        const remaining = container.querySelectorAll(".card");
-        if (remaining.length === 0) {
-          const currentState = document.getElementById("state-filter").value;
-          applyFilter(currentState);
-        } else if (remaining.length <= 5 && batchIndex < allCats.length) {
-          // Load more cards
-          createCatBatch(filteredCats, batchIndex);
-        }
-
-        if (direction === 1 && cat.url) {
-          pendingVisitUrl = cat.url;
-          matchBannerOpen = true;
-          showMatchAndOpen(cat.url);
-          confetti({
-            particleCount: 80,
-            spread: 60,
-            origin: { y: 0.6 },
-          });
-        } else {
-          card.remove();
-        }
-      }, 300);
-    } else {
-      // Reset state if not swiped far enough
-      card.style.opacity = "1";
-      card.style.transform = "";
-      inner.style.opacity = "1";
-      inner.style.transition = "opacity 0.2s ease";
-      likeEmoji.style.opacity = "0";
-      nopeEmoji.style.opacity = "0";
-    }
-
-    deltaX = 0;
-  });
-  return card;
-}
-
-document.getElementById("undo-button").addEventListener("click", () => {
-  if (lastRemovedCat) {
-    const card = createCard(lastRemovedCat); // get the new card element
-    card.classList.add("undo-animate"); // add the animation class
-
-    // Clean up the class after animation so future animations work too
-    setTimeout(() => {
-      card.classList.remove("undo-animate");
-    }, 500);
-
-    lastRemovedCat = null;
-  }
-});
-
-document.getElementById("state-filter").addEventListener("change", (e) => {
-  lastRemovedCat = null; // reset undo
-  applyFilter(e.target.value);
-});
-
-function applyFilter(state) {
-  container.innerHTML = "";
-  lastRemovedCat = null;
-  batchIndex = 0;
-
-  filteredCats = allCats.filter((cat) => {
-    if (!state) return true;
-    return cat.location && cat.location.includes(state);
-  });
-
-  createCatBatch(filteredCats, 0);
-}
-
-const visitVerb = document.getElementById("visit-verb");
+// --- Dynamic Text ---
 
 if (
   window.matchMedia("(hover: hover)").matches &&
   !/Mobi|Android/i.test(navigator.userAgent)
 ) {
-  // Desktop or laptop with a mouse
   visitVerb.textContent = "🖱️ Click";
 } else {
-  // Touchscreen or mobile device
   visitVerb.textContent = "👉 Tap";
 }
 
-function showMatchAndOpen(url) {
-  const banner = document.getElementById("match-banner");
-  pendingVisitUrl = url;
-  matchBannerOpen = true;
-
-  if (banner) {
-    banner.classList.add("show");
-  }
-}
-
-let factInterval = null;
+// --- Cat Facts Rotation ---
 
 function startCatFactsRotation() {
-  const factBox = document.getElementById("cat-fact");
-
   function updateFact() {
     const fact = catFacts[Math.floor(Math.random() * catFacts.length)];
-
-    // Fade out
     factBox.style.opacity = 0;
-
     setTimeout(() => {
       factBox.innerHTML = `🐾 ${fact}`;
       factBox.style.opacity = 1;
-    }, 800); // match your CSS transition timing
+    }, 800);
   }
 
-  updateFact(); // show one immediately
-  factInterval = setInterval(updateFact, 5000); // change every 5 seconds
+  updateFact();
+  factInterval = setInterval(updateFact, 5000);
 }
 startCatFactsRotation();
