@@ -154,6 +154,7 @@ function addSwipeHandling(card, cat) {
       inner.style.opacity = "0";
 
       setTimeout(() => {
+        lastRemovedCat = cat;
         if (direction === 1 && cat.url) {
           pendingVisitUrl = cat.url;
           matchBannerOpen = true;
