@@ -5,6 +5,8 @@ let currentBatch = [];
 let batchIndex = 0;
 const BATCH_SIZE = 20;
 let filteredCats = [];
+let matchBannerOpen = false;
+let pendingVisitUrl = null;
 const catFacts = [
   "Cats sleep 16–18 hours a day 💤",
   "A group of cats is called a 'clowder' 🐾",
@@ -74,25 +76,36 @@ fetch("cats.json")
     console.error("Error parsing JSON:", err);
   });
 
-let pendingVisitUrl = null;
-
-function showMatchAndOpen(url) {
-  const banner = document.getElementById("match-banner");
-  pendingVisitUrl = url;
-  matchBannerOpen = true;
-  if (banner) {
-    banner.classList.add("show");
-  }
-}
-
 // Handle visit button click
 document.getElementById("visit-cat-btn").addEventListener("click", () => {
   if (pendingVisitUrl) {
-    window.open(pendingVisitUrl, "_blank");
+    const urlToVisit = pendingVisitUrl;
+    pendingVisitUrl = null;
+    matchBannerOpen = false;
+
+    const topCard = container.querySelector(".card:last-child");
+    if (topCard) {
+      topCard.remove(); // now remove after match screen
+    }
+
     const banner = document.getElementById("match-banner");
     banner.classList.remove("show");
-    pendingVisitUrl = null;
+
+    window.open(urlToVisit, "_blank");
   }
+});
+
+document.getElementById("close-banner").addEventListener("click", () => {
+  matchBannerOpen = false;
+  pendingVisitUrl = null;
+
+  const topCard = container.querySelector(".card:last-child");
+  if (topCard) {
+    topCard.remove(); // now remove after close too
+  }
+
+  const banner = document.getElementById("match-banner");
+  banner.classList.remove("show");
 });
 
 function shuffle(array) {
@@ -218,12 +231,16 @@ function createCard(cat, showHint = false) {
         }
 
         if (direction === 1 && cat.url) {
+          pendingVisitUrl = cat.url;
+          matchBannerOpen = true;
           showMatchAndOpen(cat.url);
           confetti({
             particleCount: 80,
             spread: 60,
             origin: { y: 0.6 },
           });
+        } else {
+          card.remove();
         }
       }, 300);
     } else {
@@ -286,8 +303,6 @@ if (
   visitVerb.textContent = "👉 Tap";
 }
 
-let matchBannerOpen = false;
-
 function showMatchAndOpen(url) {
   const banner = document.getElementById("match-banner");
   pendingVisitUrl = url;
@@ -297,13 +312,6 @@ function showMatchAndOpen(url) {
     banner.classList.add("show");
   }
 }
-
-document.getElementById("close-banner").addEventListener("click", () => {
-  const banner = document.getElementById("match-banner");
-  banner.classList.remove("show");
-  matchBannerOpen = false;
-  pendingVisitUrl = null;
-});
 
 let factInterval = null;
 
