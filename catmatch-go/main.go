@@ -115,7 +115,10 @@ func main() {
 func scrapeCatDetails(url string) (map[string]interface{}, error) {
 	fmt.Println("Scraping:", url)
 
-	u := launcher.New().Headless(true).MustLaunch()
+	l := launcher.New().Headless(true)
+	u := l.MustLaunch()
+	defer l.Cleanup()
+
 	browser := rod.New().ControlURL(u).MustConnect()
 	defer browser.MustClose()
 

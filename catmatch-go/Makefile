@@ -62,7 +62,7 @@ go-staticcheck: ## Runs staticcheck on the codebase
 run: ## Runs the binary
 	go run main.go
 
-build: format-lint ## Builds the binary for your current platform
+build:
 	go build -o bin/${BINARY_NAME} main.go
 
 build-prod: format-lint ## Builds the binary for your current platform with production flags
