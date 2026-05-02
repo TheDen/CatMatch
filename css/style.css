@@ -372,59 +372,95 @@ body {
 
 #match-banner {
   position: fixed;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.8);
-  background: #fff8e1;
-  border: 2px solid #f9bdbb;
-  color: #333;
-  font-size: 2rem;
-  font-weight: bold;
-  padding: 2rem 2.5rem;
-  border-radius: 16px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-  opacity: 0;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
   z-index: 999;
-  transition: all 0.3s ease;
+  opacity: 0;
   pointer-events: none;
-  text-align: center;
-  font-family: var(--font-main);
+  transition:
+    opacity 0.25s ease,
+    background 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #match-banner.show {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  background: rgba(0, 0, 0, 0.45);
   pointer-events: auto;
 }
 
+#match-popup {
+  background: #fff;
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18);
+  text-align: center;
+  font-family: var(--font-main);
+  width: min(300px, 85vw);
+  position: relative;
+  transform: scale(0.88);
+  transition: transform 0.25s ease;
+}
+
+#match-banner.show #match-popup {
+  transform: scale(1);
+}
+
+.match-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-text);
+  margin-bottom: 0.4rem;
+}
+
+.match-subtitle {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.5rem;
+}
+
 #visit-cat-btn {
-  margin-top: 1.5rem;
-  background: #ffdae0;
-  color: #333;
+  display: block;
+  width: 100%;
+  background: var(--color-like);
+  color: #fff;
   border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 12px;
-  font-size: 1.2rem;
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  font-size: 1.1rem;
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.2s ease;
-  text-wrap-mode: nowrap;
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease;
 }
 
 #visit-cat-btn:hover {
-  background: #ffcbd2;
+  background: #e05aa0;
+  transform: translateY(-1px);
+}
+
+#visit-cat-btn:active {
+  transform: translateY(0);
 }
 
 #close-banner {
   position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
+  top: 0.75rem;
+  right: 0.75rem;
   background: none;
   border: none;
-  font-size: 1.2rem;
   cursor: pointer;
-  color: #333;
-  font-family: inherit;
+  color: #bbb;
+  line-height: 0;
+  padding: 0.25rem;
+  transition: color 0.15s ease;
+}
+
+#close-banner:hover {
+  color: #555;
 }
 
 #cat-fact {
