@@ -1,7 +1,4 @@
 :root {
-  --color-bg-start: #fef6e4;
-  --color-bg-mid: #f7e9f0;
-  --color-bg-end: #e3f2fd;
   --color-pass: #ff6b6b;
   --color-like: #ff69b4;
   --color-undo: #aaa;
@@ -28,15 +25,9 @@ body {
   justify-content: center;
   align-items: flex-start;
   min-height: 100dvh;
-  background: linear-gradient(
-    145deg,
-    var(--color-bg-start),
-    var(--color-bg-mid) 35%,
-    var(--color-bg-end) 70%,
-    #fdfdfe
-  );
-  background-attachment: fixed;
-  background-size: cover;
+  background-color: #fff;
+  background-image: radial-gradient(circle, #fadadd 1.5px, transparent 1.5px);
+  background-size: 28px 28px;
   flex-direction: column;
 }
 
@@ -453,7 +444,7 @@ body {
   color: var(--color-text-muted);
   text-align: center;
   margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.2rem;
   padding: 0 1rem;
   max-width: 600px;
   line-height: 1.4;
