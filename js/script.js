@@ -251,7 +251,6 @@ visitBtn.addEventListener("click", () => {
     pendingVisitUrl = null;
     banner.classList.remove("show");
     matchBannerOpen = false;
-    removeTopCard();
   }
 });
 
@@ -259,16 +258,7 @@ closeBtn.addEventListener("click", () => {
   pendingVisitUrl = null;
   banner.classList.remove("show");
   matchBannerOpen = false;
-  removeTopCard();
 });
-
-function removeTopCard() {
-  const topCard = container.querySelector(".card:last-child");
-  if (topCard) {
-    topCard.remove();
-    loadMoreCardsIfNeeded();
-  }
-}
 
 stateFilter.addEventListener("change", (e) => {
   lastRemovedCat = null;
