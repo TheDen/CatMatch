@@ -353,8 +353,15 @@ if (
 // --- Cat Facts Rotation ---
 
 function startCatFactsRotation() {
+  let deck = [];
+
+  function nextFact() {
+    if (deck.length === 0) deck = shuffle([...catFacts]);
+    return deck.pop();
+  }
+
   function updateFact() {
-    const fact = catFacts[Math.floor(Math.random() * catFacts.length)];
+    const fact = nextFact();
     factBox.style.opacity = 0;
     setTimeout(() => {
       factBox.innerHTML = `🐾 ${fact}`;
