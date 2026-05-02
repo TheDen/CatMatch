@@ -6,6 +6,8 @@ const banner = document.getElementById("match-banner");
 const factBox = document.getElementById("cat-fact");
 const stateFilter = document.getElementById("state-filter");
 const undoButton = document.getElementById("undo-button");
+const passButton = document.getElementById("pass-button");
+const likeButton = document.getElementById("like-button");
 
 let allCats = [];
 let filteredCats = [];
@@ -114,23 +116,28 @@ function createCatBatch(catArray, start = 0, size = BATCH_SIZE) {
 }
 
 function createCard(cat, showHint = false) {
-  const hasImage = cat.images?.length > 0;
-  const imgSrc = hasImage ? cat.images[0] : "images/404cat.svg";
+  const validImg = cat.images?.find(isValidPhoto);
+  const imgSrc = validImg || "images/404cat.svg";
 
   const card = document.createElement("div");
-  card.className = "card";
+  card.className = "card" + (validImg ? "" : " no-image");
+  card._catData = cat;
+
+  const agePart = cat.age ? `🎂 ${cat.age}` : "";
+  const locPart = cat.location ? `📍 ${cat.location}` : "";
+  const metaHTML =
+    agePart || locPart
+      ? `<div class="card-meta">${agePart ? `<span>${agePart}</span>` : ""}${locPart ? `<span>${locPart}</span>` : ""}</div>`
+      : "";
+
   card.innerHTML = `
     <div class="card-inner">
       ${showHint ? `<div class="swipe-hint">👉 Swipe to meet them!</div>` : ""}
-      <div class="image-wrapper">
-        <img src="${imgSrc}" alt="${cat.name}" draggable="false" />
-      </div>
-      ${!hasImage ? `<div class="no-image-label">No cat photos available 🙀</div>` : ""}
-      <div class="card-content">
+      <img src="${imgSrc}" alt="${cat.name}" draggable="false" />
+      <div class="card-overlay">
         <h2>${cat.name}</h2>
-        <p>${cat.byline || "No description"}</p>
-        <p><strong>Age:</strong> ${cat.age || "Unknown"}</p>
-        <p><strong>Location:</strong> ${cat.location || "Unknown"}</p>
+        ${cat.byline ? `<p class="byline">${cat.byline}</p>` : ""}
+        ${metaHTML}
       </div>
     </div>
     <span class="reaction like">😻</span>
@@ -165,34 +172,49 @@ function addSwipeHandling(card, cat) {
 
   hammer.on("panend", () => {
     card.classList.remove("dragging");
-
-    const inner = card.querySelector(".card-inner");
     const threshold = 120;
 
     if (!matchBannerOpen && Math.abs(deltaX) > threshold) {
-      const direction = deltaX > 0 ? 1 : -1;
-      card.style.transform = `translateX(${direction * 1000}px) rotate(${direction * 45}deg)`;
-      inner.style.opacity = "0";
-
-      setTimeout(() => {
-        lastRemovedCat = cat;
-        if (direction === 1 && cat.url) {
-          pendingVisitUrl = cat.url;
-          matchBannerOpen = true;
-          showMatchAndOpen();
-          confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
-          card.remove();
-        } else {
-          card.remove();
-        }
-        loadMoreCardsIfNeeded();
-      }, 300);
+      swipeCardOut(card, cat, deltaX > 0 ? 1 : -1);
     } else {
       resetCard(card);
     }
 
     deltaX = 0;
   });
+}
+
+// --- Swipe Actions ---
+
+function swipeCardOut(card, cat, direction) {
+  const inner = card.querySelector(".card-inner");
+  card.style.transform = `translateX(${direction * 1000}px) rotate(${direction * 45}deg)`;
+  if (inner) inner.style.opacity = "0";
+
+  setTimeout(() => {
+    lastRemovedCat = cat;
+    if (direction === 1 && cat.url) {
+      pendingVisitUrl = cat.url;
+      matchBannerOpen = true;
+      showMatchAndOpen();
+      confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+    }
+    card.remove();
+    loadMoreCardsIfNeeded();
+  }, 300);
+}
+
+function triggerSwipe(direction) {
+  if (matchBannerOpen) return;
+  const topCard = container.querySelector(".card:last-child");
+  if (!topCard) return;
+  const cat = topCard._catData;
+  if (!cat) return;
+
+  const reaction = topCard.querySelector(direction > 0 ? ".like" : ".nope");
+  if (reaction) reaction.style.opacity = "1";
+
+  swipeCardOut(topCard, cat, direction);
 }
 
 // --- Helper Functions ---
@@ -260,6 +282,19 @@ undoButton.addEventListener("click", () => {
     setTimeout(() => card.classList.remove("undo-animate"), 500);
     lastRemovedCat = null;
   }
+});
+
+passButton.addEventListener("click", () => triggerSwipe(-1));
+likeButton.addEventListener("click", () => triggerSwipe(1));
+
+document.addEventListener("keydown", (e) => {
+  if (matchBannerOpen) {
+    if (e.key === "Escape") closeBtn.click();
+    return;
+  }
+  if (e.key === "ArrowLeft") triggerSwipe(-1);
+  else if (e.key === "ArrowRight") triggerSwipe(1);
+  else if (e.key === "z" && (e.ctrlKey || e.metaKey)) undoButton.click();
 });
 
 // --- Filter and Utilities ---

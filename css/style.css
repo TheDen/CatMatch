@@ -1,92 +1,127 @@
+:root {
+  --color-bg-start: #fef6e4;
+  --color-bg-mid: #f7e9f0;
+  --color-bg-end: #e3f2fd;
+  --color-pass: #ff6b6b;
+  --color-like: #ff69b4;
+  --color-undo: #aaa;
+  --color-text: #333;
+  --color-text-muted: #666;
+  --card-radius: 16px;
+  --font-main: "Caveat Brush", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 @font-face {
   font-family: "Caveat Brush";
   font-style: normal;
   font-weight: 400;
   src:
     url("../fonts/CaveatBrush-Regular.ttf") format("truetype"),
-    url("../fonts/CaveatBrush-Regular.woff2") format("woff");
+    url("../fonts/CaveatBrush-Regular.woff2") format("woff2");
 }
 
 body {
-  font-family: "Caveat Brush", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--font-main);
   margin: 0;
   padding: 0;
-  background: #f6f8fa;
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 100%;
+  align-items: flex-start;
+  min-height: 100dvh;
   background: linear-gradient(
     145deg,
-    #fef6e4,
-    #f7e9f0 35%,
-    #e3f2fd 70%,
+    var(--color-bg-start),
+    var(--color-bg-mid) 35%,
+    var(--color-bg-end) 70%,
     #fdfdfe
   );
-
   background-attachment: fixed;
   background-size: cover;
   flex-direction: column;
 }
 
-@keyframes backgroundMove {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
 #card-container {
   position: relative;
-  width: 90vw; /* 90% of the viewport width */
-  max-width: 400px; /* cap it so it doesn't look huge */
-  height: 75vh; /* 75% of viewport height */
-  max-height: 600px; /* cap max height too */
-  margin: 0 auto; /* center it horizontally */
+  width: 90vw;
+  max-width: 400px;
+  height: 65vh;
+  max-height: 520px;
+  margin: 0 auto;
 }
 
 .card {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: white;
-  border-radius: 12px;
+  background: #fff;
+  border-radius: var(--card-radius);
   overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   transition:
     transform 0.3s ease,
     opacity 0.3s ease;
   touch-action: pan-y;
-  will-change: transform;
   will-change: transform, opacity;
   cursor: grab;
 }
 
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
 .card img {
-  user-drag: none; /* Safari */
-  -webkit-user-drag: none; /* Older WebKit */
+  user-drag: none;
+  -webkit-user-drag: none;
   user-select: none;
   pointer-events: auto;
   width: 100%;
-  height: 60%;
+  height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-.card-content {
-  padding: 1rem;
+.card.no-image img {
+  object-fit: contain;
+  padding: 2rem;
+  background: #fff5ee;
+  box-sizing: border-box;
 }
 
-.card h2 {
+.card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2.5rem 1rem 1rem;
+  background: linear-gradient(
+    transparent 0%,
+    rgba(0, 0, 0, 0.55) 35%,
+    rgba(0, 0, 0, 0.82) 100%
+  );
+  border-radius: 0 0 var(--card-radius) var(--card-radius);
+  color: #fff;
+}
+
+.card-overlay h2 {
+  margin: 0 0 0.25rem;
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.card-overlay .byline {
   margin: 0 0 0.5rem;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 1rem;
 }
 
-.card p {
-  margin: 0.2rem 0;
-  color: #555;
+.card-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .card.dragging {
@@ -94,64 +129,84 @@ body {
   cursor: grabbing;
 }
 
-#undo-wrapper {
-  position: fixed;
-  bottom: 5vh;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  width: auto;
-  text-align: center;
-}
-
-#undo-button {
-  background: #fff;
-  color: #444;
-  font-size: 1rem;
-  padding: 0.6rem 1.4rem;
-  border: 2px solid #ddd;
-  border-radius: 50px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-  font-family: "Caveat Brush", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  backdrop-filter: blur(6px);
-  background-color: rgba(255, 255, 255, 0.9);
-}
-
-#undo-button:hover {
-  background: #f9f9f9;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-}
-
-#undo-button:before {
-  font-size: 1.2rem;
-}
-
 .card .reaction {
   position: absolute;
   top: 20px;
-  font-size: 3rem;
+  font-size: 4rem;
   opacity: 0;
   transition: opacity 0.2s;
   pointer-events: none;
-  font-size: 4rem;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .card .reaction.like {
   left: 20px;
-  color: green;
 }
 
 .card .reaction.nope {
   right: 20px;
-  color: red;
+}
+
+#action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+#pass-button,
+#like-button,
+#undo-button {
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  font-family: var(--font-main);
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+#pass-button {
+  width: 58px;
+  height: 58px;
+  font-size: 1.5rem;
+  color: var(--color-pass);
+  border: 2.5px solid var(--color-pass);
+}
+
+#like-button {
+  width: 66px;
+  height: 66px;
+  font-size: 1.7rem;
+  color: var(--color-like);
+  border: 2.5px solid var(--color-like);
+}
+
+#undo-button {
+  width: 48px;
+  height: 48px;
+  font-size: 1.2rem;
+  color: var(--color-undo);
+  border: 2px solid #ddd;
+}
+
+#pass-button:hover,
+#like-button:hover,
+#undo-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+#pass-button:active,
+#like-button:active,
+#undo-button:active {
+  transform: scale(0.95);
 }
 
 #controls {
@@ -165,8 +220,8 @@ body {
 #controls label {
   font-weight: bold;
   font-size: 1.1rem;
-  font-family: "Caveat Brush", "Helvetica Neue", Helvetica, sans-serif;
-  color: #333;
+  font-family: var(--font-main);
+  color: var(--color-text);
 }
 
 #state-filter {
@@ -175,16 +230,16 @@ body {
   padding: 0.5rem 1rem;
   border-radius: 20px;
   border: 2px solid #ddd;
-  background-color: #fff !important;
-  background-image: none !important;
+  background-color: #fff;
+  background-image: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+  appearance: none;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: all 0.2s ease;
-  appearance: none; /* remove default arrow in Safari */
   -webkit-tap-highlight-color: transparent;
-  color: #333;
+  color: var(--color-text);
 }
 
 #state-filter:hover {
@@ -203,36 +258,38 @@ body {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 80%;
+  padding-bottom: 2.5rem;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
-  #app {
-    height: 100%;
-  }
   #state-filter {
-    padding-top: 0.2em;
-    padding-right: 0.5em;
-    padding-left: 0.5em;
-    padding-bottom: 0.2em;
+    padding: 0.2em 0.5em;
   }
 }
 
 /* iphone SE height */
 @media (max-height: 710px) {
   #site-title {
-    margin-bottom: 0px !important;
+    margin-bottom: 0 !important;
   }
   #site-tagline {
-    margin-top: 0px !important;
-    margin-bottom: 0px !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
   }
   #controls {
-    margin-bottom: 0px !important;
+    margin-bottom: 0 !important;
   }
   #cat-fact {
-    margin-top: 0px !important;
-    margin-bottom: 0px !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  #card-container {
+    height: 58vh;
+    max-height: 440px;
+  }
+  #action-buttons {
+    margin-top: 0.5rem;
   }
 }
 
@@ -241,7 +298,7 @@ body {
   margin-top: 1rem;
   margin-bottom: 0.5rem;
   text-align: center;
-  color: #333;
+  color: var(--color-text);
 }
 
 #site-tagline {
@@ -249,7 +306,7 @@ body {
   text-align: center;
   margin-bottom: 1rem;
   margin-top: 0;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 @keyframes swipe-hint {
@@ -307,8 +364,9 @@ body {
   width: 100%;
   text-align: center;
   font-size: 0.75rem;
-  color: #666;
-  background: #f9f9f9;
+  color: var(--color-text-muted);
+  background: rgba(249, 249, 249, 0.95);
+  backdrop-filter: blur(4px);
 }
 
 @keyframes undo-slide-in {
@@ -326,22 +384,6 @@ body {
   animation: undo-slide-in 0.4s ease-out;
 }
 
-.no-image-label {
-  margin-top: 0.4rem;
-  text-align: center;
-  background: #fffbe6;
-  color: #444;
-  font-weight: bold;
-  font-size: 0.95rem;
-  padding: 0.4rem 0.8rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.image-wrapper {
-  width: 100%;
-  height: 60%;
-}
 
 .info {
   margin-top: 7px;
@@ -349,7 +391,6 @@ body {
 }
 
 #match-banner {
-  /* existing styles */
   position: fixed;
   top: 40%;
   left: 50%;
@@ -367,7 +408,7 @@ body {
   transition: all 0.3s ease;
   pointer-events: none;
   text-align: center;
-  font-family: "Caveat Brush", sans-serif;
+  font-family: var(--font-main);
 }
 
 #match-banner.show {
@@ -407,9 +448,9 @@ body {
 }
 
 #cat-fact {
-  font-family: "Caveat Brush", sans-serif;
+  font-family: var(--font-main);
   font-size: 1rem;
-  color: #555;
+  color: var(--color-text-muted);
   text-align: center;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
